@@ -1,0 +1,8 @@
+display more than 10 items
+display correct tier list
+display actual bar chart
+
+# episodes vs score
+x axis and y axis
+
+start with sorting by score or by number of episodes

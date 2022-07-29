@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>My Anime List Visualization</title>
+	<style>
+		body, html {
+			height: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			background-color:black;
+		}
+		#svg {
+			border: 1px solid;
+		}
+	</style>
+</head>
+<body>
+	<svg id="svg" width="1400" height="800">
+		<g>
+			<circle></circle>
+			<text></text>
+		</g>
+	</svg>
+	<script src="https://d3js.org/d3.v7.min.js"></script>
+	<script>
+		d3.csv('./MALratings.csv')
+			.then(data => {
+				const sortRatings = (data) => {
+					data.sort((a, b) => {
+						return parseFloat(b.Score) - parseFloat(a.Score)
+					})
+					const sortedAnimeNames = data.map(anime => anime.Title);
+					// return data.slice(0, 11)
+					// return sortedAnimeNames.slice(0, 11)
+				}
+				// console.log(sortRatings(data));
+				// console.log(data)
+				// console.log(data.filter((d, i) => {
+				// 	console.log(i)
+				// 	return d.Score == 9.14
+				// }))
+
+				const xScale = d3.scaleLinear()
+					.domain(d3.extent(data, d => parseFloat(d.Episodes)))
+					.range([0, 1400])
+
+				const yScale = d3.scaleLinear()
+					.domain(d3.extent(data, d => parseFloat(d.Score)))
+					.range([0, 800])
+
+				const colorScale = d3.scaleOrdinal()
+					.domain(data.map(d => d.Genres))
+					.range(['#23303C', '#2A565C', '#377F71', '#5FA778', '#9ECD75', '#F1ED74', '#3F242E', '#5D4052', '#755F7B', '#8683A5', '#8EAACF', '#8ED3F4', '#332A38', '#563C4F', '#7E4F62', '#A86272', '#D2777C', '#FA9081'])
+
+				// const div = d3.select('body').append('text')
+				// 	.attr('class', 'tooltip-donut')
+				// 	.style('opacity', '0')
+
+				const node = d3.select('#svg')
+					.style('border', '1px solid')
+					.style('background-color', '#F2F2F2')
+					.selectAll('g')
+					.data(data)
+					.enter()
+
+				const groups = node
+					.append('g')
+
+				groups
+					.append('circle')
+					.attr('cx', d => xScale(d.Episodes))
+					.attr('cy', d => yScale(d.Score))
+					.attr('r', 6)
+					.attr('fill', (d) => colorScale(d.Genres))
+					.attr('opacity', 0.85)
+					.on('mouseover', function (d, i) {
+						d3.select(this).transition()
+							.duration('50')
+							.attr('opacity', '.5');
+						// div.transition()
+						// 	.duration('50')
+						// 	.style('opacity', '1');
+					})
+					.on('mouseout', function (d, i) {
+						d3.select(this).transition()
+							.duration('50')
+							.attr('opacity', '.85');
+						// div.transition()
+						// 	.duration('50')
+						// 	.style('opacity', '0')
+					})
+
+				groups
+					.append('text')
+					.text(d => d.Title) // set the text
+					.attr('x', d => xScale(d.Episodes) + 5)
+					.attr('y', d => yScale(d.Score))
+					.style('font-family', 'Helvetica')
+					.style('font-size', '18px')
+					.attr('opacity', '0')
+					.on('mouseover', function (d, i) {
+						d3.select(this).transition()
+							.duration('50')
+							.attr('opacity', '1');
+					})
+					.on('mouseout', function (d, i) {
+						d3.select(this).transition()
+							.duration('50')
+							.attr('opacity', '0');
+					})
+
+
+				// const xScale = d3.scaleLinear()
+				// 	.domain(d3.extent(data, d => parseFloat(d.Episodes)))
+				// 	.range([0, 1400])
+
+				// const yScale = d3.scaleLinear()
+				// 	.domain(d3.extent(data, d => parseFloat(d.Score)))
+				// 	.range([0, 800])
+
+				// const colorScale = d3.scaleOrdinal()
+				// 	.domain(data.map(d => d.Genres))
+				// 	.range(['#23303C', '#2A565C', '#377F71', '#5FA778', '#9ECD75', '#F1ED74', '#3F242E', '#5D4052', '#755F7B', '#8683A5', '#8EAACF', '#8ED3F4', '#332A38', '#563C4F', '#7E4F62', '#A86272', '#D2777C', '#FA9081'])
+				// 	// axis to say what we're seeing, tick marks to say what we're seeing
+				
+				// d3.select('#svg')
+				// 		.style('border', '1px solid')
+				// 		.style('background-color', '#F2F2F2')
+				// 		.style('margin', '20px 40px')
+				// 		.style('padding', '.5em')
+				// 		.selectAll('circle')
+				// 		.data(data)
+				// 		.enter()
+				// 		.append('circle')
+
+				// 		// .attr('cx', (d, i) => i * 500 / data.length)
+						
+				// 		.attr('cx', d => xScale(d.Episodes))
+				// 		// domain, minimum episode length and max episode length
+				// 		.attr('cy', d => yScale(d.Score))
+				// 		.attr('r', 5)
+				// 		.attr('fill', (d) => colorScale(d.Genres))
+				// 		.attr('opacity', 0.5)
+						
+
+						
+
+						
+						// .style('font-family', 'Helvetica')
+						// .style('font-size', '20px')
+
+						// .text((d) => `${d.toFixed(2)}`)
+						
+			})
+	</script>
+</body>
+</html>
